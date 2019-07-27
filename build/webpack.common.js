@@ -1,25 +1,27 @@
 const path = require("path");
+const Webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 module.exports = {
-  context: path.resolve(__dirname, "../"), //必写。可以使webpack的配置脱离文档路径束缚
+  context: path.resolve(__dirname, "../"), //设置上下文，entry和plugins字段中的路径都以此为准，这样就使得webpack配置文件脱离文件目录结构束缚
   entry: {
-    index: ["./src/app.js"]
+    index: ["./src/index.js"]
   },
   output: {
-    filename: "[name].js",
-    path: path.resolve(__dirname, "../dist")
+    path: path.resolve(__dirname, "../dist"),
+    filename: "[name].[hash].js", //hash是工程级别的，一个文件修改，所有文件的hash全部重新编译
+    chunkFilename: "chunk.[name].[chunkhash:8].js" //chunkhash是文件级别的，一个文件修改，自身和相关文件的hash重新编译（注：另一个是contenthash,是内容级别的,比前两个影响范围更细更小,只会自身的hash重新编译）
   },
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.(js||jsx)$/,
         use: [
           {
             loader: "babel-loader"
           }
         ],
+        include: /src/,
         exclude: /node_modules/
       },
       {
@@ -68,6 +70,8 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./public/index.html"
     }),
-    new CleanWebpackPlugin()
+    new Webpack.DllReferencePlugin({
+      manifest: require("../dist/vendor-manifest.json") //引入DllPluginc插件生成的manifestjson文件
+    })
   ]
 };
