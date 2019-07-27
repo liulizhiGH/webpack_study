@@ -21,8 +21,8 @@ module.exports = {
             loader: "babel-loader"
           }
         ],
-        include: /src/,
-        exclude: /node_modules/
+        include: /src/, //必须是绝对路径或正则表达式
+        exclude: /node_modules/ //必须是绝对路径或正则表达式
       },
       {
         test: /\.(css)$/,
@@ -47,7 +47,7 @@ module.exports = {
           {
             loader: "less-loader",
             options: {
-              javascriptEnabled: true
+              javascriptEnabled: true //必须设置，antd组件按需加载
             }
           }
         ]
@@ -59,7 +59,7 @@ module.exports = {
             loader: "url-loader",
             options: {
               limit: 10000,
-              outputPath: "./images"
+              outputPath: "images" //相对路径，相对于context中设置的路径，其他loader同理
             }
           }
         ]
