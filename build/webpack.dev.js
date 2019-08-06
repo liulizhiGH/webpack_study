@@ -21,8 +21,8 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, "../dist"),
-    filename: "[name].[hash:8].js", //hash是工程级别的，一个文件修改，所有文件的hash全部重新编译
-    chunkFilename: "chunk.[name].[chunkhash:8].js" //chunkhash是文件级别的，一个文件修改，自身和相关文件的hash重新编译（注：另一个是contenthash,是内容级别的,比前两个影响范围更细更小,只会自身的hash重新编译）
+    filename: "[name].js", //hash是工程级别的，一个文件修改，所有文件的hash全部重新编译
+    chunkFilename: "chunk.[name].js" //chunkhash是文件级别的，一个文件修改，自身和相关文件的hash重新编译（注：另一个是contenthash,是内容级别的,比前两个影响范围更细更小,只会自身的hash重新编译）
   },
   // 拆包
   optimization: {
