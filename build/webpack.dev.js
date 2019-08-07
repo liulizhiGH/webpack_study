@@ -5,10 +5,11 @@ const Happypack = require("happypack");
 const os = require("os");
 const happypackThreadPool = Happypack.ThreadPool({ size: os.cpus().length });
 
+//开发环境下不使用任何hash，不js代码压缩，不css文件提取
 module.exports = {
   context: path.resolve(__dirname, "../"),
   mode: "development",
-  devtool: "source-map",
+  devtool: "cheap-module-eval-source-map",
   devServer: {
     contentBase: path.resolve(__dirname, "../dist"), //这句话"一定要写"，设置webpack-dev-server以此做为静态文件服务器目录，这样就能够"同时使用"内存中的动态文件和dist目录中的真实文件了
     port: 3000,
