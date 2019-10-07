@@ -7,6 +7,7 @@ const Happypack = require("happypack");
 const os = require("os");
 const happypackThreadPool = Happypack.ThreadPool({ size: os.cpus().length });
 
+//生产环境下使用hash，压缩js代码，提取并压缩css文件
 module.exports = {
   context: path.resolve(__dirname, "../"), //以下所有相对路径都是相对于context字段
   mode: "production",
@@ -16,8 +17,9 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "../dist"),
     filename: "./js/[name].[hash].js", //hash是工程级别的，一个文件修改，所有文件的hash全部重新编译
-    chunkFilename: "./js/chunk.[name].[chunkhash:8].js" //chunkhash是文件级别的，一个文件修改，自身和相关文件的hash重新编译（注：另一个是contenthash,是内容级别的,比前两个影响范围更细更小,只会自身的hash重新编译）
+    chunkFilename: "./js/chunk.[name].[chunkhash:8].js" //chunkhash是文件级别的，一个文件修改，自身和相关文件的hash重新编译（注：另一个是contenthash,是内容级别的,比前两个影响范围更细更小,只会自身的hash重新编译，但需要相应插件支持，并且需要在相应插件中设置）
   },
+  // 拆包（即提取代码中重复引用部分）
   optimization: {
     splitChunks: {
       chunks: "all"
@@ -80,8 +82,9 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./public/index.html"
     }),
+    //引入DllPluginc插件生成的manifestjson文件
     new Webpack.DllReferencePlugin({
-      manifest: require("../dist/vendor-manifest.json") //引入DllPluginc插件生成的manifestjson文件
+      manifest: require("../dist/vendor-manifest.json")
     }),
     new MiniCssExtractPlugin({
       filename: "css/[name].[hash].css",
@@ -94,7 +97,7 @@ module.exports = {
         {
           loader: "babel-loader",
           options: {
-            cacheDirectory: true
+            cacheDirectory: true // 开启babel-loader的编译缓存，加快重新编译速度
           }
         }
       ],
