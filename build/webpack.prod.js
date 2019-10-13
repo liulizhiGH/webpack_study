@@ -13,7 +13,7 @@ module.exports = {
   mode: "production",
   context: path.resolve(__dirname, "../"), //以下所有相对路径都是相对于context字段
   entry: {
-    index: ["./src/index.js"]
+    index: ["./src/app.js"]
   },
   output: {
     path: path.resolve(__dirname, "../dist"),

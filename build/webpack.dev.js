@@ -18,7 +18,7 @@ module.exports = {
     historyApiFallback: true //使用react-router中的BrowzerRouter时，一定要开启
   },
   entry: {
-    index: ["./src/index.js"]
+    index: ["./src/app.js"]
   },
   output: {
     path: path.resolve(__dirname, "../dist"),
