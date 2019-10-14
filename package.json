@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "clean":"rimraf ./dist/*",
+    "clean": "rimraf ./dist/*",
     "dll": "webpack --progress --config ./build/webpack.dll.js",
     "build": "npm run clean && npm run dll && webpack --config ./build/webpack.prod.js",
     "dev": "npm run clean && npm run dll && webpack-dev-server --config ./build/webpack.dev.js"
@@ -30,7 +30,7 @@
     "style-loader": "^0.23.1",
     "url-loader": "^2.1.0",
     "webpack": "^4.34.0",
-    "webpack-cli": "^3.3.4",
+    "webpack-cli": "^3.3.9",
     "webpack-dev-server": "^3.7.1"
   },
   "dependencies": {
