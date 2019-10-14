@@ -15,7 +15,7 @@ module.exports = {
   plugins: [
     // 利用webpack自带的DllPlugin生成mainfestjson文件（即模块间的依赖关系地图）
     new Webpack.DllPlugin({
-      path: path.resolve(__dirname, "../dist/[name]-manifest.json"), //生成链接库的mainfestjson文件（name即entry中的名字（"vender"），内容就是,介绍链接库中各个文件的对应依赖映射等的关系类似source-map）
+      path: path.resolve(__dirname, "../dist/js/dll/[name]-manifest.json"), //生成链接库的mainfestjson文件（name即entry中的名字（"vender"），内容就是,介绍链接库中各个文件的对应依赖映射等的关系类似source-map）
       name: "[name]_library" //与上面的配置的动态链接库标识名必须一致
     })
   ]

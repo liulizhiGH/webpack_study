@@ -23,8 +23,8 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "../dist"),
     publicPath: "/", // 设置好公共路径，以便解决css中引入图片字体文件等的路径问题
-    filename: "[name].js", //hash是工程级别的，一个文件修改，所有文件的hash全部重新编译
-    chunkFilename: "chunk.[name].js" //chunkhash是文件级别的，一个文件修改，自身和相关文件的hash重新编译（注：另一个是contenthash,是内容级别的,比前两个影响范围更细更小,只会自身的hash重新编译，但需要相应插件支持，并且需要在相应插件中设置）
+    filename: "js/[name].js", //hash是工程级别的，一个文件修改，所有文件的hash全部重新编译
+    chunkFilename: "js/chunk.[name].js" //chunkhash是文件级别的，一个文件修改，自身和相关文件的hash重新编译（注：另一个是contenthash,是内容级别的,比前两个影响范围更细更小,只会自身的hash重新编译，但需要相应插件支持，并且需要在相应插件中设置）
   },
   // 拆包（即提取代码中重复引用部分）
   optimization: {
@@ -32,7 +32,7 @@ module.exports = {
       chunks: "all"
     },
     runtimeChunk: {
-      name: "runtime-manifest" // 生成运行时manifestjson文件（即模块间的依赖地图）
+      name: "runtime-manifest" // 生成运行时manifestjs文件（即模块间的依赖地图）
     }
   },
   module: {
@@ -59,7 +59,7 @@ module.exports = {
         test: /\.(less)$/,
         use: [
           {
-            loader: "happypack/loader?id=happyLess"
+            loader: "happypack/loader?id=happyLESS"
           }
         ]
       },
@@ -82,9 +82,9 @@ module.exports = {
       template: "./public/index.html"
     }),
     // 分包（即提取公共第三方代码库等）
-    //引入DllPluginc插件生成的manifestjson文件,可以不使用require，只是一个路径就好
+    //引入DllPluginc插件生成的manifestjson文件,可以不使用require，可以只是一个路径
     new Webpack.DllReferencePlugin({
-      manifest: require("../dist/vendor-manifest.json")
+      manifest: "./dist/js/dll/vendor-manifest.json"
     }),
     // 多线程编译，id即对应标识，loaders即和module中的use字段用法一致，threadPool即用几线程
     new Happypack({
@@ -114,7 +114,7 @@ module.exports = {
       verbose: true
     }),
     new Happypack({
-      id: "happyLess",
+      id: "happyLESS",
       loaders: [
         {
           loader: "style-loader"

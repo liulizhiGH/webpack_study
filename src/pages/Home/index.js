@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import "../../style.less";
+import "./style.less";
 import testImg from "../../assets/testImg.png";
 
 class Home extends Component {
   render() {
     return (
-      <ul>
+      <ul className="homestyle">
         <img src={testImg} />
         <li>这是home组件的内容</li>
         <li>这是home组件的内容</li>
