@@ -3,6 +3,6 @@ import "./style.less";
 
 export default class index extends Component {
   render() {
-    return <div className="concatus">联系我们</div>;
+    return <div className="concatus">联系我们 hhhh</div>;
   }
 }

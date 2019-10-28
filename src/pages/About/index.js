@@ -6,7 +6,7 @@ export default class index extends Component {
     return (
       <div id="about">
         关于我们
-        <h1>welcome</h1>
+        <h1>welcome dev修改</h1>
       </div>
     )
   }
