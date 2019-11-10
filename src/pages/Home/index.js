@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import "../../style.less";
 import "./style.less";
 import testImg from "../../assets/testImg.png";
 

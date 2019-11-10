@@ -1,6 +1,8 @@
+// 此文件为整个项目的入口文件，webpack构建亦是从此开始
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import "./index.less";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Concat from "./pages/Concat";
