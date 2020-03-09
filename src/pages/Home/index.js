@@ -17,5 +17,10 @@ class Home extends Component {
     );
   }
 }
+// 子类的原型=父类的实例，构成继承
+let abc=new Home();
+console.log(abc.__proto__===Home.prototype,"__proto__")
+console.log(abc.__proto__.__proto__,"two")
+console.log(abc.__proto__.__proto__.__proto__.constructor,"3")
 
 export default Home;

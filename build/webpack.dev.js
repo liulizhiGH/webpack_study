@@ -1,6 +1,7 @@
 const path = require("path");
 const Webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+// 多线程编译打包
 const Happypack = require("happypack");
 const os = require("os");
 const happypackThreadPool = Happypack.ThreadPool({ size: os.cpus().length });
@@ -23,10 +24,11 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "../dist"),
     publicPath: "/", // 设置好公共路径，以便解决css中引入图片字体文件等的路径问题
-    filename: "js/[name].js", //hash是工程级别的，一个文件修改，所有文件的hash全部重新编译
-    chunkFilename: "js/chunk.[name].js" //chunkhash是文件级别的，一个文件修改，自身和相关文件的hash重新编译（注：另一个是contenthash,是内容级别的,比前两个影响范围更细更小,只会自身的hash重新编译，但需要相应插件支持，并且需要在相应插件中设置）
+    filename: "./js/[name].js", //hash是工程级别的，一个文件修改，所有文件的hash全部重新编译
+    chunkFilename: "./js/chunk.[name].js" //chunkhash是文件级别的，一个文件修改，自身和相关文件的hash重新编译（注：另一个是contenthash,是内容级别的,比前两个影响范围更细更小,只会自身的hash重新编译，但需要相应插件支持，并且需要在相应插件中设置）
   },
-  // 拆包（即提取代码中重复引用部分）
+  // 拆包（把每个文件中重复引用的代码部分提取到一个文件）
+  // wp4新增字段
   optimization: {
     splitChunks: {
       chunks: "all"
@@ -36,12 +38,15 @@ module.exports = {
     }
   },
   module: {
+    // loaders的执行顺序依次为从右到左，即从下到上
+    // 使用happypack接管的loader，其下面不可以有option字段选项
     rules: [
       {
         test: /\.(js|jsx)$/,
         use: [
           {
             loader: "happypack/loader?id=happyJS"
+            // 此处不可以有option选项,因为happypack不识别，可以在下面happypack配置中配置option选项
           }
         ],
         include: /src/, //必须是绝对路径或正则表达式
@@ -70,7 +75,7 @@ module.exports = {
             loader: "url-loader",
             options: {
               limit: 10000,
-              outputPath: "images" //相对路径，相对于context中设置的路径，其他loader同理
+              outputPath: "./images" //相对路径，相对于context中设置的路径，其他loader同理
             }
           }
         ]

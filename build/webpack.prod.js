@@ -1,14 +1,16 @@
 const path = require("path");
 const Webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+// 多线程编译打包
 const Happypack = require("happypack");
 const os = require("os");
 const happypackThreadPool = Happypack.ThreadPool({ size: os.cpus().length });
 // ---------------------------------------------------------------
+// 单独配置css提取，并压缩
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCss = require("optimize-css-assets-webpack-plugin");
 
-//生产环境下使用hash，压缩js代码，提取并压缩css文件
+//生产环境下使用hash，压缩js代码，提取并压缩css文件，（生产环境默认打包压缩js，所以css需要单独引入插件，并单独配置）
 module.exports = {
   mode: "production",
   context: path.resolve(__dirname, "../"), //以下所有相对路径都是相对于context字段
@@ -17,11 +19,12 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, "../dist"),
-    publicPath: "/", // 设置好公共路径，以便解决css中引入图片字体文件等的路径问题
-    filename: "js/[name].[chunkhash:8].js", //hash是工程级别的，一个文件修改，所有文件的hash全部重新编译
-    chunkFilename: "js/chunk.[name].[chunkhash:8].js" //chunkhash是文件级别的，一个文件修改，自身和相关文件的hash重新编译（注：另一个是contenthash,是内容级别的,比前两个影响范围更细更小,只会自身的hash重新编译，但需要相应插件支持，并且需要在相应插件中设置）
+    publicPath: "./", // 设置好公共路径，一般用以应对资源是cdn的情况
+    filename: "./js/[name].[chunkhash:8].js", //hash是工程级别的，一个文件修改，所有文件的hash全部重新编译
+    chunkFilename: "./js/chunk.[name].[chunkhash:8].js" //chunkhash是文件级别的，一个文件修改，自身和相关文件的hash重新编译（注：另一个是contenthash,是内容级别的,比前两个影响范围更细更小,只会自身的hash重新编译，但需要相应插件支持，并且需要在相应插件中设置）
   },
-  // 拆包（即提取代码中重复引用部分）
+  // 拆包（提取每个文件中重复引用的代码部分到一个文件中）
+  // wp4新增字段
   optimization: {
     splitChunks: {
       chunks: "all"
@@ -31,12 +34,15 @@ module.exports = {
     }
   },
   module: {
+    // loaders的执行顺序为从右至左，即从下到上
+    // happypack接管的loader下，不可以有option字段
     rules: [
       {
         test: /\.(js|jsx)$/,
         use: [
           {
             loader: "happypack/loader?id=happyJS"
+            //此处不可有option选项，因为happypack无法识别，可以在下面的happypack配置中配置option选项
           }
         ],
         include: /src/, //必须是绝对路径或正则表达式
@@ -73,7 +79,7 @@ module.exports = {
             loader: "url-loader",
             options: {
               limit: 10000,
-              outputPath: "images" //相对路径，相对于context中设置的路径，其他loader同理
+              outputPath: "./images" //相对路径，相对于output中的path
             }
           }
         ]
@@ -89,11 +95,12 @@ module.exports = {
     new Webpack.DllReferencePlugin({
       manifest: "./dist/js/dll/vendor-manifest.json"
     }),
-    // 提取和压缩css
+    // 提取css
     new MiniCssExtractPlugin({
-      filename: "css/[name].[contenthash:8].css",
-      chunkFilename: "css/chunk.[name].[contenthash:8].css" //插件提供的内容级别的hash
+      filename: "./css/[name].[contenthash:8].css",
+      chunkFilename: "./css/chunk.[name].[contenthash:8].css" //插件提供的内容级别的hash
     }),
+    // 压缩css
     new OptimizeCss({}),
     // 多线程编译，id即对应标识，loaders即和module中的use字段用法一致，threadPool即用几线程
     new Happypack({
