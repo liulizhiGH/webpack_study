@@ -1,3 +1,4 @@
+// 尽量使用绝对路径
 const path = require("path");
 const Webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -10,28 +11,27 @@ const happypackThreadPool = Happypack.ThreadPool({ size: os.cpus().length });
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCss = require("optimize-css-assets-webpack-plugin");
 
-//生产环境下使用hash，压缩js代码，提取并压缩css文件，（生产环境默认打包压缩js，所以css需要单独引入插件，并单独配置）
+// 生产环境下使用hash，压缩js代码，提取并压缩css文件，（生产环境默认打包压缩js，所以css需要单独引入压缩插件，并单独配置）
 module.exports = {
   mode: "production",
-  context: path.resolve(__dirname, "../"), //以下所有相对路径都是相对于context字段
   entry: {
-    index: ["./src/index.js"] //如果文件名是index.js，就可以省略不写，即"./src"
+    index: [path.resolve(__dirname, "../src/index.js")],
   },
   output: {
     path: path.resolve(__dirname, "../dist"),
-    publicPath: "./", // 设置好公共路径，一般用以应对资源是cdn的情况
-    filename: "./js/[name].[chunkhash:8].js", //hash是工程级别的，一个文件修改，所有文件的hash全部重新编译
-    chunkFilename: "./js/chunk.[name].[chunkhash:8].js" //chunkhash是文件级别的，一个文件修改，自身和相关文件的hash重新编译（注：另一个是contenthash,是内容级别的,比前两个影响范围更细更小,只会自身的hash重新编译，但需要相应插件支持，并且需要在相应插件中设置）
+    publicPath: "", // 一般不使用cdn资源可以不配置，即默认就是空字符串
+    filename: "./js/[name].[chunkhash:8].js", // hash是工程级别的，一个文件修改，所有文件的hash全部重新编译
+    chunkFilename: "./js/chunk.[name].[chunkhash:8].js", // chunkhash是文件级别的，一个文件修改，自身和相关文件的hash重新编译（注：另一个是contenthash,是内容级别的,比前两个影响范围更细更小,只会自身的hash重新编译，但需要自身插件支持，并且需要在相应插件中设置）
   },
   // 拆包（提取每个文件中重复引用的代码部分到一个文件中）
   // wp4新增字段
   optimization: {
     splitChunks: {
-      chunks: "all"
+      chunks: "all",
     },
     runtimeChunk: {
-      name: "runtime-manifest" // 生成运行时manifestjs文件（即模块间的依赖地图）
-    }
+      name: "runtime-manifest", // 生成运行时manifestjs文件（即模块间的依赖地图）
+    },
   },
   module: {
     // loaders的执行顺序为从右至左，即从下到上
@@ -41,36 +41,42 @@ module.exports = {
         test: /\.(js|jsx)$/,
         use: [
           {
-            loader: "happypack/loader?id=happyJS"
-            //此处不可有option选项，因为happypack无法识别，可以在下面的happypack配置中配置option选项
-          }
+            loader: "happypack/loader?id=happyJS",
+            // 此处不可有option选项
+          },
         ],
-        include: /src/, //必须是绝对路径或正则表达式
-        exclude: /node_modules/ //必须是绝对路径或正则表达式
+        include: /src/, // 必须是绝对路径或正则表达式
+        exclude: /node_modules/, //必须是绝对路径或正则表达式
       },
       {
         test: /\.(css)$/,
         use: [
-          // 特别注意，不使用happypack接管mini-css-extract-plugin组件的loader，不然会报错误，所以依然保留MiniCssExtractPlugin.loader
+          // 特别注意，不可使用happypack接管mini-css-extract-plugin组件的loader，不然会报错误，所以依然保留MiniCssExtractPlugin.loader，并且style-loader和mini-css-extract-plugin互相冲突，不可同时使用（一般这两者分属开发和生产环境）
           {
-            loader: MiniCssExtractPlugin.loader
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              publicPath: "../", //打包后css文件夹和images文件夹的相对位置决定此值
+            },
           },
           {
-            loader: "happypack/loader?id=happyCSS"
-          }
-        ]
+            loader: "happypack/loader?id=happyCSS",
+          },
+        ],
       },
       {
         test: /\.(less)$/,
         use: [
           // 特别注意，不使用happypack接管mini-css-extract-plugin组件的loader，不然会报错误，所以依然保留MiniCssExtractPlugin.loader
           {
-            loader: MiniCssExtractPlugin.loader
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              publicPath: "../", //打包后css文件夹和images文件夹的相对位置决定此值
+            },
           },
           {
-            loader: "happypack/loader?id=happyLESS"
-          }
-        ]
+            loader: "happypack/loader?id=happyLESS",
+          },
+        ],
       },
       {
         test: /\.(jpe?g|png|svg|gif)$/,
@@ -79,26 +85,26 @@ module.exports = {
             loader: "url-loader",
             options: {
               limit: 10000,
-              outputPath: "./images" //相对路径，相对于output中的path
-            }
-          }
-        ]
-      }
-    ]
+              outputPath: "./images", //相对路径，相对于output中的path
+            },
+          },
+        ],
+      },
+    ],
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "./public/index.html"
+      template: path.resolve(__dirname, "../public/index.html"),
     }),
     // 分包（即提取公共第三方代码库等）
     //引入DllPluginc插件生成的manifestjson文件,可以不使用require，可以只是一个路径
     new Webpack.DllReferencePlugin({
-      manifest: "./dist/js/dll/vendor-manifest.json"
+      manifest: path.resolve(__dirname, "../dist/js/dll/vendor-manifest.json"),
     }),
-    // 提取css
+    // 提取css,路径相对于output.path
     new MiniCssExtractPlugin({
       filename: "./css/[name].[contenthash:8].css",
-      chunkFilename: "./css/chunk.[name].[contenthash:8].css" //插件提供的内容级别的hash
+      chunkFilename: "./css/chunk.[name].[contenthash:8].css", //插件提供的内容级别的hash
     }),
     // 压缩css
     new OptimizeCss({}),
@@ -109,38 +115,38 @@ module.exports = {
         {
           loader: "babel-loader",
           options: {
-            cacheDirectory: true // 开启babel-loader的编译缓存，加快重新编译速度
-          }
-        }
+            cacheDirectory: true, // 开启babel-loader的编译缓存，加快重新编译速度
+          },
+        },
       ],
       threadPool: happypackThreadPool,
-      verbose: true
+      verbose: true,
     }),
     new Happypack({
       id: "happyCSS",
       loaders: [
         {
-          loader: "css-loader"
-        }
+          loader: "css-loader",
+        },
       ],
       threadPool: happypackThreadPool,
-      verbose: true
+      verbose: true,
     }),
     new Happypack({
       id: "happyLESS",
       loaders: [
         {
-          loader: "css-loader"
+          loader: "css-loader",
         },
         {
           loader: "less-loader",
           options: {
-            javascriptEnabled: true //必须设置，antd组件按需加载
-          }
-        }
+            javascriptEnabled: true, //必须设置，antd组件按需加载
+          },
+        },
       ],
       threadPool: happypackThreadPool,
-      verbose: true
-    })
-  ]
+      verbose: true,
+    }),
+  ],
 };
