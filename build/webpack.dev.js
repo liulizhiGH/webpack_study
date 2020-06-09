@@ -100,6 +100,13 @@ module.exports = {
             cacheDirectory: true, // 开启babel-loader的编译缓存，加快重新编译速度
           },
         },
+        // 切记先使用eslint-loader校验我们的原始js代码
+        {
+          loader: "eslint-loader",
+          options: {
+            cache: true,
+          },
+        },
       ],
       threadPool: happypackThreadPool,
       verbose: true,

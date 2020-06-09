@@ -16,7 +16,7 @@ if (module.hot) {
 
 ReactDOM.render(
   <div>
-    <Home />
+    <Home hhh={123} />
     <About />
     <Concat />
   </div>,

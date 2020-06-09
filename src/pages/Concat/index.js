@@ -1,8 +1,23 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import "./style.less";
 
-export default class index extends Component {
-  render() {
-    return <div className="concatus">联系我们 hhhh</div>;
-  }
-}
+const Myhooks = () => {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    document.title = `你点击了${count}次数！`;
+  }, []);
+  return (
+    <div>
+      <h1>点击了{count}次数</h1>
+      <button
+        onClick={() => {
+          setCount(count + 1);
+        }}
+      >
+        click!!!
+      </button>
+    </div>
+  );
+};
+
+export default Myhooks;

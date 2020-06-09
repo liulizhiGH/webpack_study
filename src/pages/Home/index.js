@@ -1,9 +1,25 @@
 import React, { Component } from "react";
 import "./style.less";
 import testImg from "../../assets/testImg.png";
+// 使用高阶组件
+import WithMouse from "../HOC";
 
+const kkk=async ()=>{
+  const res=await fetch();
+  console.log(res)
+}
 class Home extends Component {
+  constructor(props) {
+    super(props);
+    console.log(this.props);
+  }
+
+  componentDidMount() {
+    kkk();
+  }
+  
   render() {
+    console.log(this.props,"this.props")
     return (
       <ul className="homestyle">
         <img src={testImg} />
@@ -17,10 +33,5 @@ class Home extends Component {
     );
   }
 }
-// 子类的原型=父类的实例，构成继承
-let abc=new Home();
-console.log(abc.__proto__===Home.prototype,"__proto__")
-console.log(abc.__proto__.__proto__,"two")
-console.log(abc.__proto__.__proto__.__proto__.constructor,"3")
 
-export default Home;
+export default WithMouse(Home);

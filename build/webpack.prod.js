@@ -66,7 +66,7 @@ module.exports = {
       {
         test: /\.(less)$/,
         use: [
-          // 特别注意，不使用happypack接管mini-css-extract-plugin组件的loader，不然会报错误，所以依然保留MiniCssExtractPlugin.loader
+          // 特别注意，不可使用happypack接管mini-css-extract-plugin组件的loader，不然会报错误，所以依然保留MiniCssExtractPlugin.loader，并且生产环境不使用style-loader，并且style-loader和mini-css-extract-plugin一起使用会冲突
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
@@ -116,6 +116,13 @@ module.exports = {
           loader: "babel-loader",
           options: {
             cacheDirectory: true, // 开启babel-loader的编译缓存，加快重新编译速度
+          },
+        },
+        // 切记先使用eslint-laoder校验我们的原始js代码
+        {
+          loader: "eslint-loader",
+          options: {
+            cache: true,
           },
         },
       ],
