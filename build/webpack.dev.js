@@ -15,8 +15,8 @@ module.exports = {
     contentBase: path.resolve(__dirname, "../dist"), //这句话"一定要写"，设置webpack-dev-server以此做为静态文件服务器目录，这样就能够"同时使用"内存中的动态文件和dist目录中的真实文件了
     port: 3000,
     open: true,
-    hot: true, //开启hmr热替换
-    historyApiFallback: true, //使用react-router中的BrowzerRouter时，一定要开启
+    hot: true, //开启hmr热替换(👍)
+    historyApiFallback: true, //使用react-router-dom中的BrowzerRouter时，一定要开启
   },
   entry: {
     index: [path.resolve(__dirname, "../src/index.js")],
@@ -34,7 +34,7 @@ module.exports = {
       chunks: "all",
     },
     runtimeChunk: {
-      name: "runtime-manifest", // 生成运行时manifestjs文件（即模块间的依赖地图）
+      name: "runtime-manifest", // 生成供webpack使用的运行时的manifestjs文件（即模块间的依赖地图）
     },
   },
   module: {
